@@ -33,5 +33,19 @@ torchvision = { index = "pytorch-cuda" }
 torchaudio = { index = "pytorch-cuda" }
 xformers = { index = "pytorch-cuda" }
 
-[tool.uv]
-managed = true
+[tool.ruff]
+target-version = "py310"
+extend-exclude = [
+    "*.ipynb",
+    "data/**",
+    "ComfyUI/**",
+    "**/.venv/**",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B"]
+ignore = ["E402"] # Allow module level imports not at top (useful for experiment scripts)
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+force-single-line = false

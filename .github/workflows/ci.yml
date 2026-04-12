@@ -3,8 +3,19 @@ name: Gemma4_CI
 on:
   push:
     branches: [ main ]
+    paths:
+      - '**.py'
+      - 'pyproject.toml'
+      - 'docker/**'
+      - 'Makefile'
+      - '.github/workflows/ci.yml'
   pull_request:
     branches: [ main ]
+    paths:
+      - '**.py'
+      - 'pyproject.toml'
+      - 'docker/**'
+      - 'Makefile'
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true

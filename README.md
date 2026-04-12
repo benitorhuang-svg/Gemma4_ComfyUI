@@ -32,7 +32,8 @@
 ### 3. ⚡ 極速自動化 (Automation & DevOps)
 *   **全域鏡像源**：Apt、Pip、UV 下載皆鎖定高速鏡像站，2.5GB 的 PyTorch 下載不再是噩夢。
 *   **自癒啟動引擎**：自動安裝插件依賴，並偵測 VRAM 動態切換 `--lowvram` 模式。
-*   **TCMalloc 加強**：解決長時運行內存洩漏，穩定性提升。
+*   **高品質規範**：整合 **Ruff** Linter 與 **Pre-commit** 鉤子，確保實驗代碼不影響系統穩定性。
+*   **CI/CD 優化**：GitHub Actions 具備路徑過濾機制，精準執行代碼檢查，大幅減少等待時間。
 
 ---
 
@@ -66,7 +67,24 @@ make api-server      # 啟動行動端閘道器 (Port 8000)
 | `make status` | 實時查看所有容器健康度與資源佔用 (CPU/MEM) |
 | `make build-brain`| 將 Gemma 4 轉化為具備無審查創意能力的「生圖大師」 |
 | `make update-nodes`| [極速] 4 進程並行更新所有 ComfyUI 自訂節點 |
-| `make doctor` | 執行系統全方位診斷，一鍵排查配置問題 |
+| `make doctor` | 執行系統全方位診斷，包含 GPU 映射、網路連通性與磁碟空間 |
+| `make check` | **[NEW]** 本地代碼品質檢查 (Ruff + Compose Config) |
+
+---
+
+## 🛠️ 開發者指南 (Developer Guide)
+
+本專案採用嚴格的代碼品質控管，請開發者遵循以下流程：
+
+1. **環境初始化**：
+   使用 `uv` 管理依賴，執行 `uv sync` 安裝所有開發套件。
+2. **啟動 Pre-commit 鉤子**：
+   執行以下指令，確保每次提交前自動執行代碼格式化：
+   ```bash
+   uv run pre-commit install
+   ```
+3. **提交前檢查**：
+   在 push 程式碼前，建議手動執行 `make check` 確保完全符合規範。
 
 ---
 

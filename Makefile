@@ -2,17 +2,26 @@
 include .env
 export $(shell sed 's/=.*//' .env)
 
-.PHONY: start stop restart restart-comfy restart-ollama logs logs-comfy clean shell gemma4 help sync download-models update-nodes monitor share backup lint format prune status doctor
+.PHONY: start stop restart restart-comfy restart-ollama logs logs-comfy clean shell gemma4 help sync download-models update-nodes monitor share backup lint format prune status doctor check
 
 # ... (other code) ...
 
 doctor:
 	@echo "🩺 正在執行全方位系統診斷..."
 	@docker --version || echo "❌ Docker 缺失"
+	@nvidia-smi --query-gpu=status,memory.free --format=csv || echo "❌ GPU 驅動或容器調度異常"
 	@docker compose config > /dev/null || echo "❌ Docker Compose 配置錯誤"
 	@test -f .env || echo "⚠️ .env 缺失，建議從 .env.example 複製"
+	@echo "🌐 檢查服務連通性..."
+	@curl -s http://localhost:11434 > /dev/null && echo "✅ Ollama 端口連通" || echo "⚠️ Ollama 尚未啟動或端口未開放"
 	@df -h . | awk 'NR==2 {if ($$4 < 10) print "⚠️ 磁碟剩餘空間不足 10GB (" $$4 " 剩餘)"}'
 	@echo "✅ 診斷完成。如有問題，請嘗試執行 'make prune'。"
+
+check:
+	@echo "🔍 執行本地代碼品質檢查..."
+	uv run ruff check .
+	uv run ruff format --check .
+	@docker compose config -q && echo "✅ Docker Compose 配置正確"
 
 build-brain:
 	@echo "🧠 正在將 Gemma 4 轉化為 ComfyUI 專家模式..."

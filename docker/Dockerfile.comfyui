@@ -59,8 +59,16 @@ RUN if [ -f /etc/apt/sources.list ]; then \
         sed -i 's/security.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources; \
     fi && \
     apt-get update && apt-get install -y --no-install-recommends \
-    git wget aria2 libglib2.0-0 libgoogle-perftools4 ffmpeg libsm6 libxext6 \
-    && rm -rf /var/lib/apt/lists/*
+    git \
+    wget \
+    aria2 \
+    libgl1 \
+    libglib2.0-0 \
+    libgoogle-perftools4 \
+    ffmpeg \
+    libsm6 \
+    libxext6 \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
