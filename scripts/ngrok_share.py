@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 from pyngrok import ngrok
 
 def start_share():
@@ -32,7 +33,6 @@ def start_share():
             
         print("\n💡 請保持此視窗開啟以維持連線。按 Ctrl+C 停止分享。")
         
-        import time
         while True:
             time.sleep(1)
     except KeyboardInterrupt:

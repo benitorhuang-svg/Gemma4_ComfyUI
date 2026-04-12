@@ -4,14 +4,21 @@ FROM python:3.10-slim AS builder
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 ENV UV_COMPILE_BYTECODE=1 \
-    UV_SYSTEM_PYTHON=1
+    UV_SYSTEM_PYTHON=1 \
+    LD_PRELOAD=
 
 WORKDIR /install
 
 # 使用鏡像源加速 Apt
-RUN sed -i 's/deb.debian.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list \
-    && sed -i 's/security.debian.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list \
-    && apt-get update && apt-get install -y --no-install-recommends \
+RUN if [ -f /etc/apt/sources.list ]; then \
+        sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list && \
+        sed -i 's/security.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list; \
+    fi && \
+    if [ -f /etc/apt/sources.list.d/debian.sources ]; then \
+        sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources && \
+        sed -i 's/security.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources; \
+    fi && \
+    apt-get update && apt-get install -y --no-install-recommends \
     git build-essential \
     && rm -rf /var/lib/apt/lists/*
 
@@ -20,16 +27,16 @@ RUN sed -i 's/deb.debian.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.li
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv pip install --system \
     torch torchvision torchaudio xformers \
-    --index-url https://pypi.tuna.tsinghua.edu.cn/simple \
+    --index-url https://mirrors.aliyun.com/pypi/simple/ \
     --extra-index-url https://download.pytorch.org/whl/cu121
 
 RUN git clone --depth 1 https://github.com/comfyanonymous/ComfyUI.git /install/ComfyUI
 
-COPY pyproject.toml uv.lock* /install/
+COPY . /install/
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv pip install --system -r /install/ComfyUI/requirements.txt \
-    --index-url https://pypi.tuna.tsinghua.edu.cn/simple \
-    && uv pip install --system -e .
+    --index-url https://mirrors.aliyun.com/pypi/simple/ \
+    && uv pip install --system .
 
 # --- Stage 2: Final Runtime ---
 FROM python:3.10-slim
@@ -43,9 +50,15 @@ ENV PYTHONUNBUFFERED=1 \
 
 WORKDIR /workspace
 
-RUN sed -i 's/deb.debian.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list \
-    && sed -i 's/security.debian.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list \
-    && apt-get update && apt-get install -y --no-install-recommends \
+RUN if [ -f /etc/apt/sources.list ]; then \
+        sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list && \
+        sed -i 's/security.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list; \
+    fi && \
+    if [ -f /etc/apt/sources.list.d/debian.sources ]; then \
+        sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources && \
+        sed -i 's/security.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources; \
+    fi && \
+    apt-get update && apt-get install -y --no-install-recommends \
     git wget aria2 libglib2.0-0 libgoogle-perftools4 ffmpeg libsm6 libxext6 \
     && rm -rf /var/lib/apt/lists/*
 

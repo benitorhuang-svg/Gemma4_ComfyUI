@@ -1,5 +1,6 @@
 import subprocess
 import shutil
+import time
 from rich.console import Console
 from rich.table import Table
 from rich.panel import Panel
@@ -51,7 +52,6 @@ def main():
     with Live(generate_dashboard(), refresh_per_second=1):
         try:
             while True:
-                import time
                 time.sleep(1)
         except KeyboardInterrupt:
             console.print("\n[bold red]👋 儀表板關閉[/]")

@@ -1,8 +1,6 @@
 from fastapi import FastAPI, BackgroundTasks
 from pydantic import BaseModel
 import requests
-import json
-import time
 
 app = FastAPI(title="Gemma4 Mobile API", description="AI 創作站手機端快捷 API")
 
