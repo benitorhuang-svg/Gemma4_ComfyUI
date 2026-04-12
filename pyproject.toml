@@ -1,23 +1,35 @@
 [project]
 name = "gemma4-comfyui"
-version = "0.1.0"
-description = "Gemma4 ComfyUI project managed by uv"
+version = "2.6.0"
+description = "Gemma4 ComfyUI project - Ultimate Orchestration Edition"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "torch",
-    "torchvision",
-    "torchaudio",
-    "pyngrok",
-    "pillow",
-    "numpy",
-    "aiohttp",
-    "tqdm",
-    "pyyaml",
+    "torch>=2.2.0",
+    "torchvision>=0.17.0",
+    "torchaudio>=2.2.0",
+    "xformers>=0.0.24",
+    "pyngrok>=7.1.0",
+    "pillow>=10.2.0",
+    "numpy>=1.26.0",
+    "aiohttp>=3.9.0",
+    "tqdm>=4.66.0",
+    "pyyaml>=6.0.1",
+    "ruff>=0.3.0",
+    "gpustat>=1.1.0",
+    "rich>=13.7.0",
 ]
+
+[[tool.uv.index]]
+name = "pytorch-cuda"
+url = "https://download.pytorch.org/whl/cu121"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cuda" }
+torchvision = { index = "pytorch-cuda" }
+torchaudio = { index = "pytorch-cuda" }
+xformers = { index = "pytorch-cuda" }
 
 [tool.uv]
 managed = true
-# You can add custom indexes here if needed, e.g. for CUDA
-# index-url = "https://pypi.org/simple"
-# extra-index-url = ["https://download.pytorch.org/whl/cu121"]

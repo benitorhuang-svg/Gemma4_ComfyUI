@@ -1,28 +1,55 @@
-FROM python:3.10-slim
+# --- Stage 1: Builder ---
+FROM python:3.10-slim AS builder
 
-# Install uv
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-ENV PYTHONUNBUFFERED=1
-WORKDIR /workspace
+ENV UV_COMPILE_BYTECODE=1 \
+    UV_SYSTEM_PYTHON=1
 
+WORKDIR /install
+
+# Install build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    git wget build-essential libglib2.0-0 ca-certificates \
+    git build-essential libgoogle-perftools-dev \
     && rm -rf /var/lib/apt/lists/*
 
-ARG COMFYUI_REPO=https://github.com/comfyanonymous/ComfyUI.git
-RUN git clone ${COMFYUI_REPO} ComfyUI || true
+# Clone ComfyUI
+RUN git clone --depth 1 https://github.com/comfyanonymous/ComfyUI.git /install/ComfyUI
 
-# Use uv to install dependencies into the system environment
-COPY pyproject.toml /workspace/
+# Install core dependencies into system
+COPY pyproject.toml uv.lock* /install/
 RUN uv pip install --system --upgrade pip setuptools wheel \
-    && if [ -f ComfyUI/requirements.txt ]; then uv pip install --system -r ComfyUI/requirements.txt; fi \
-    && uv pip install --system -e .
+    && uv pip install --system -r /install/ComfyUI/requirements.txt \
+    && uv pip install --system --no-cache-dir torch torchvision torchaudio xformers --index-url https://download.pytorch.org/whl/cu121
+
+# --- Stage 2: Final Runtime ---
+FROM python:3.10-slim
+
+# Copy uv for runtime usage
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+ENV PYTHONUNBUFFERED=1 \
+    UV_SYSTEM_PYTHON=1 \
+    LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc.so.4 \
+    PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+
+WORKDIR /workspace
+
+# Install ONLY runtime libraries
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git wget aria2 libglib2.0-0 libgoogle-perftools4 ffmpeg libsm6 libxext6 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy installed packages from builder
+COPY --from=builder /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
+COPY --from=builder /install/ComfyUI /workspace/ComfyUI
 
 COPY scripts /workspace/scripts
+COPY main.py /workspace/main.py
 RUN chmod +x /workspace/scripts/*.sh
 
-VOLUME ["/workspace/models", "/workspace/ComfyUI"]
+VOLUME ["/workspace/models", "/workspace/ComfyUI/custom_nodes", "/workspace/ComfyUI/output", "/workspace/ComfyUI/input", "/workspace/workflows"]
 EXPOSE 8188
 
 CMD ["/workspace/scripts/start_comfyui.sh"]

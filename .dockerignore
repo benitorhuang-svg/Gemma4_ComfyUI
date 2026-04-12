@@ -7,3 +7,5 @@ __pycache__
 .git
 .gitignore
 .vscode
+data/
+experiments/

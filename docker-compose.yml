@@ -1,4 +1,5 @@
 version: '3.8'
+
 services:
   comfyui:
     build:
@@ -7,29 +8,91 @@ services:
     image: gemma4-comfyui:latest
     container_name: comfyui
     restart: unless-stopped
+    shm_size: '2gb'
     ports:
-      - "8188:8188"
+      - "${COMFYUI_PORT:-8188}:8188"
     environment:
-      - OLLAMA_HOST=${OLLAMA_HOST}
+      - OLLAMA_HOST=http://ollama:11434
       - NGROK_TOKEN=${NGROK_TOKEN}
+      - NGROK_AUTH=${NGROK_AUTH}
+      - LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc.so.4
+      - PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+      - CUDA_DEVICE_ORDER=PCI_BUS_ID
     volumes:
-      - ./models:/workspace/models
-      - ./ComfyUI:/workspace/ComfyUI
+      - ./data/models:/workspace/models
+      - ./data/comfyui/custom_nodes:/workspace/ComfyUI/custom_nodes
+      - ./data/comfyui/output:/workspace/ComfyUI/output
+      - ./data/comfyui/input:/workspace/ComfyUI/input
+      - ./data/workflows:/workspace/workflows
     depends_on:
-      - ollama
+      ollama:
+        condition: service_healthy
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
 
   ollama:
-    image: ${OLLAMA_IMAGE}
+    image: ${OLLAMA_IMAGE:-ollama/ollama:latest}
     container_name: ollama
     restart: unless-stopped
     ports:
-      - "11434:11434"
+      - "${OLLAMA_PORT:-11434}:11434"
     environment:
-      - OLLAMA_ROOT=/ollama_state
       - OLLAMA_FLASH_ATTENTION=1
       - OLLAMA_KV_CACHE_TYPE=turbo4
+      - OLLAMA_NUM_PARALLEL=1
+      - OLLAMA_MAX_LOADED_MODELS=1
+      - OLLAMA_KEEP_ALIVE=0s
     volumes:
-      - ./ollama_state:/ollama_state
+      - ./data/ollama:/root/.ollama
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    restart: unless-stopped
+    ports:
+      - "${WEBUI_PORT:-8080}:8080"
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY:-gemma4_secret_key_change_me}
+      - ENABLE_RAG=True
+      - ENABLE_SEARCH=True
+    volumes:
+      - ./data/open-webui:/app/backend/data
+    depends_on:
+      ollama:
+        condition: service_healthy
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 networks:
   default:
