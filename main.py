@@ -1,7 +1,5 @@
-import os
 import subprocess
 import shutil
-import sys
 from rich.console import Console
 from rich.table import Table
 from rich.panel import Panel
@@ -15,18 +13,19 @@ def get_gpu_status():
     if not shutil.which("nvidia-smi"):
         return "N/A"
     try:
-        out = subprocess.check_output(["nvidia-smi", "--query-gpu=memory.used,memory.total,utilization.gpu", "--format=csv,noheader,nounits"]).decode().strip()
+        out = subprocess.check_output(
+            ["nvidia-smi", "--query-gpu=memory.used,memory.total,utilization.gpu", "--format=csv,noheader,nounits"]
+        ).decode().strip()
         used, total, util = out.split(", ")
         return f"[bold cyan]{used}/{total} MiB[/] ([yellow]{util}%[/])"
-    except:
+    except Exception:
         return "Error"
 
 def get_docker_status():
     try:
         out = subprocess.check_output(["docker", "compose", "ps", "--format", "json"]).decode()
-        # 這裡簡化處理，僅判斷是否運行
         return "[bold green]Running[/]" if out.strip() else "[bold red]Stopped[/]"
-    except:
+    except Exception:
         return "[bold red]N/A[/]"
 
 def generate_dashboard():
@@ -42,7 +41,7 @@ def generate_dashboard():
 
     layout = Layout()
     layout.split_column(
-        Layout(Panel(f"[bold yellow]🌟 Gemma 4 + ComfyUI 極致編排系統 v2.6.0[/]", box=box.DOUBLE), size=3),
+        Layout(Panel("[bold yellow]🌟 Gemma 4 + ComfyUI 極致編排系統 v2.6.0[/]", box=box.DOUBLE), size=3),
         Layout(table),
         Layout(Panel("[bold green]常用指令:[/] make start | make status | make build-brain | make backup", title="Quick Guide"), size=3)
     )

@@ -1,7 +1,4 @@
 import requests
-import json
-import os
-import time
 
 # 配置服務位址 (對應 docker-compose)
 OLLAMA_URL = "http://localhost:11434/api/generate"
@@ -36,7 +33,7 @@ def queue_comfy_image(prompt_text):
     
     # 這裡是一個簡化的 ComfyUI API 工作流 JSON 結構
     # 實際上您需要從 ComfyUI 介面匯出 "API Format" 的 JSON
-    workflow = {
+    workflow = {  # noqa: F841
         "3": {
             "inputs": {
                 "seed": 42,

@@ -1,7 +1,6 @@
 import json
 import urllib.request
 import urllib.parse
-import os
 
 # ComfyUI API 存取範例
 # 執行前請確保 ComfyUI 正在運行中 (make start)
@@ -24,10 +23,10 @@ def generate_image_example():
     
     # 這裡放一個最簡化的穩定擴散工作流 (Workflow JSON)
     # 注意: 下載完 DreamShaper 模型後此腳本才可運作
-    prompt_text = "A beautiful sunset over a cyberpunk city, highly detailed, 8k"
+    prompt_text = "A beautiful sunset over a cyberpunk city, highly detailed, 8k"  # noqa: F841
     
     # 這裡僅為示意架構，實際工作流需從 ComfyUI 匯出的 API JSON 填入
-    workflow = {
+    workflow = {  # noqa: F841
         "3": {
             "class_type": "KSampler",
             "inputs": {

@@ -15,6 +15,7 @@ if curl -s --connect-timeout 2 http://ollama:11434/api/tags > /dev/null; then
   echo "🤖 檢查 Ollama 模型狀態..."
   if ! curl -s http://ollama:11434/api/tags | grep -q "${TARGET_MODEL}"; then
     echo "⬇️ 偵測到模型 ${TARGET_MODEL} 缺失，正在背景啟動下載任務..."
+    echo "💡 提示: 您可以在宿主機執行 'docker exec -it ollama ollama list' 查看進度。"
     curl -X POST http://ollama:11434/api/pull -d "{\"name\": \"${TARGET_MODEL}\"}" > /dev/null &
   fi
 else
@@ -22,6 +23,7 @@ else
 fi
 
 # --- 3. 自動修復 & 安裝自定義節點依賴 ---
+export PYTHONPATH="${PYTHONPATH:-}:/workspace/ComfyUI"
 echo "🧩 掃描並確保核心插件存在..."
 NODES_DIR="/workspace/ComfyUI/custom_nodes"
 
@@ -35,6 +37,12 @@ fi
 if [ ! -d "$NODES_DIR/ComfyUI-Ollama" ]; then
   echo "📥 安裝 ComfyUI-Ollama..."
   git clone --depth 1 https://github.com/vrtmrz/ComfyUI-Ollama.git "$NODES_DIR/ComfyUI-Ollama"
+fi
+
+# 自動克隆 ComfyUI-TensorRT (極致生圖加速)
+if [ ! -d "$NODES_DIR/ComfyUI-TensorRT" ]; then
+  echo "📥 安裝 ComfyUI-TensorRT..."
+  git clone --depth 1 https://github.com/comfyanonymous/ComfyUI-TensorRT.git "$NODES_DIR/ComfyUI-TensorRT"
 fi
 
 if [ -d "$NODES_DIR" ]; then

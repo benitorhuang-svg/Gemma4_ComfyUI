@@ -95,6 +95,12 @@ sync:
 share:
 	docker exec -it comfyui python /workspace/scripts/ngrok_share.py
 
-prune:
-	bash scripts/cleanup_data.sh
-	@echo "✅ 系統清理完成。"
+flush:
+	@echo "🧹 正在清理系統與殘留的 VRAM..."
+	@sudo nvidia-smi --gpu-reset || echo "⚠️ 無法完全重置，嘗試清理殘留進程..."
+	@sudo fuser -v /dev/nvidia* | awk '{print $$2}' | xargs -r kill -9 || true
+	@echo "✅ 顯存與系統資源清理完畢。"
+
+api-server:
+	@echo "📱 正在啟動行動端 API 閘道器..."
+	@uv run uvicorn experiments.mobile_api:app --host 0.0.0.0 --port 8000
