@@ -1,0 +1,23 @@
+[project]
+name = "gemma4-comfyui"
+version = "0.1.0"
+description = "Gemma4 ComfyUI project managed by uv"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "torch",
+    "torchvision",
+    "torchaudio",
+    "pyngrok",
+    "pillow",
+    "numpy",
+    "aiohttp",
+    "tqdm",
+    "pyyaml",
+]
+
+[tool.uv]
+managed = true
+# You can add custom indexes here if needed, e.g. for CUDA
+# index-url = "https://pypi.org/simple"
+# extra-index-url = ["https://download.pytorch.org/whl/cu121"]

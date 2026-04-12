@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  comfyui:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.comfyui
+    image: gemma4-comfyui:latest
+    container_name: comfyui
+    restart: unless-stopped
+    ports:
+      - "8188:8188"
+    environment:
+      - OLLAMA_HOST=${OLLAMA_HOST}
+      - NGROK_TOKEN=${NGROK_TOKEN}
+    volumes:
+      - ./models:/workspace/models
+      - ./ComfyUI:/workspace/ComfyUI
+    depends_on:
+      - ollama
+
+  ollama:
+    image: ${OLLAMA_IMAGE}
+    container_name: ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    environment:
+      - OLLAMA_ROOT=/ollama_state
+      - OLLAMA_FLASH_ATTENTION=1
+      - OLLAMA_KV_CACHE_TYPE=turbo4
+    volumes:
+      - ./ollama_state:/ollama_state
+
+networks:
+  default:
+    name: gemma4_network

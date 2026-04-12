@@ -1,0 +1,28 @@
+FROM python:3.10-slim
+
+# Install uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+ENV PYTHONUNBUFFERED=1
+WORKDIR /workspace
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git wget build-essential libglib2.0-0 ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+ARG COMFYUI_REPO=https://github.com/comfyanonymous/ComfyUI.git
+RUN git clone ${COMFYUI_REPO} ComfyUI || true
+
+# Use uv to install dependencies into the system environment
+COPY pyproject.toml /workspace/
+RUN uv pip install --system --upgrade pip setuptools wheel \
+    && if [ -f ComfyUI/requirements.txt ]; then uv pip install --system -r ComfyUI/requirements.txt; fi \
+    && uv pip install --system -e .
+
+COPY scripts /workspace/scripts
+RUN chmod +x /workspace/scripts/*.sh
+
+VOLUME ["/workspace/models", "/workspace/ComfyUI"]
+EXPOSE 8188
+
+CMD ["/workspace/scripts/start_comfyui.sh"]
