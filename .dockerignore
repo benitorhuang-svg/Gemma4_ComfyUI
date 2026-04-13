@@ -16,5 +16,4 @@ experiments/
 .env
 # uv.lock
 # pyproject.toml
-README.md
 LICENSE

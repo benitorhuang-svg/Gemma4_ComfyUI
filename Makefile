@@ -9,7 +9,7 @@ export $(shell sed 's/=.*//' .env)
 doctor:
 	@echo "🩺 正在執行全方位系統診斷..."
 	@docker --version || echo "❌ Docker 缺失"
-	@nvidia-smi --query-gpu=status,memory.free --format=csv || echo "❌ GPU 驅動或容器調度異常"
+	@nvidia-smi --query-gpu=name,memory.total,memory.free --format=csv || echo "❌ GPU 驅動或容器調度異常"
 	@docker compose config > /dev/null || echo "❌ Docker Compose 配置錯誤"
 	@test -f .env || echo "⚠️ .env 缺失，建議從 .env.example 複製"
 	@echo "🌐 檢查服務連通性..."
@@ -34,6 +34,7 @@ sync-modelfile:
 help:
 	@echo "🚀 Gemma 4 + ComfyUI 系統管理指令:"
 	@echo "  make start            - 啟動所有服務 (背景執行)"
+	@echo "  make cpu-start        - 以 CPU 模式啟動服務 (無需 GPU 驅動)"
 	@echo "  make stop             - 停止所有服務"
 	@echo "  make status           - 查看服務健康狀態與資源佔用"
 	@echo "  make restart          - 重啟所有服務"
@@ -109,6 +110,17 @@ flush:
 	@sudo nvidia-smi --gpu-reset || echo "⚠️ 無法完全重置，嘗試清理殘留進程..."
 	@sudo fuser -v /dev/nvidia* | awk '{print $$2}' | xargs -r kill -9 || true
 	@echo "✅ 顯存與系統資源清理完畢。"
+
+prune:
+	@echo "🧹 正在深度清理 Docker 殘留數據..."
+	docker compose down -v --remove-orphans
+	docker system prune -f
+	@echo "✅ 清理完成。"
+
+cpu-start:
+	@echo "⚠️ 正在以 CPU 模式啟動服務 (性能可能較低)..."
+	docker compose -f docker-compose.yml -f docker/docker-compose.cpu.yml up --build -d
+	@echo "✅ 服務已在 CPU 模式下啟動！"
 
 api-server:
 	@echo "📱 正在啟動行動端 API 閘道器..."

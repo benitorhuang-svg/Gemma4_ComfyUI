@@ -1,0 +1,12 @@
+services:
+  comfyui:
+    deploy:
+      resources:
+        reservations:
+          devices: []
+
+  ollama:
+    deploy:
+      resources:
+        reservations:
+          devices: []

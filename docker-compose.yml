@@ -12,6 +12,8 @@ services:
     ports:
       - "${COMFYUI_PORT:-8188}:8188"
     environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
       - OLLAMA_HOST=http://ollama:11434
       - NGROK_TOKEN=${NGROK_TOKEN}
       - NGROK_AUTH=${NGROK_AUTH}
@@ -47,6 +49,8 @@ services:
     ports:
       - "${OLLAMA_PORT:-11434}:11434"
     environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
       - OLLAMA_FLASH_ATTENTION=1
       - OLLAMA_KV_CACHE_TYPE=turbo4
       - OLLAMA_NUM_PARALLEL=1

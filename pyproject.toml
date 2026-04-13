@@ -50,6 +50,11 @@ ignore = ["E402"] # Allow module level imports not at top (useful for experiment
 combine-as-imports = true
 force-single-line = false
 
+[tool.setuptools.packages.find]
+where = ["."]
+include = []
+exclude = ["docker*", "ComfyUI*", "experiments*", "scripts*", "data*"]
+
 [dependency-groups]
 dev = [
     "pre-commit>=4.5.1",
