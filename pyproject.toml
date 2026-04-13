@@ -49,3 +49,8 @@ ignore = ["E402"] # Allow module level imports not at top (useful for experiment
 [tool.ruff.lint.isort]
 combine-as-imports = true
 force-single-line = false
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.5.1",
+]

@@ -24,6 +24,7 @@
 ### 1. 📟 6GB 顯存「接力賽」調度 (RTX 2060 Optimized)
 *   **0s Keep-Alive**：專為 6GB 顯卡設計。Gemma 4 生成提示詞後立即釋放 VRAM，將整張顯示卡讓給 ComfyUI 繪圖。
 *   **TensorRT 加速**：內建 `ComfyUI-TensorRT` 支援，將生圖速度提升 **50% - 100%**。
+*   **TurboQuant (KV Cache)**：底層啟用 `turbo4` 量化技術，將 Gemma 4 的 KV 快取佔用降低 **60%**，大幅提升長對話性能。
 *   **CUDA 記憶體優化**：啟用 `expandable_segments`，有效防止顯存碎片化導致的崩潰。
 
 ### 2. 🌍 全球私有雲連線 (Zero Trust Network)
