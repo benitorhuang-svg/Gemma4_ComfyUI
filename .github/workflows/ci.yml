@@ -18,7 +18,7 @@ on:
       - 'Makefile'
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE25: true
 
 jobs:
   lint:
@@ -31,6 +31,7 @@ jobs:
         uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
+          cache-dependency-glob: "uv.lock"
       - name: Set up Python
         run: uv python install
       - name: Lint with ruff
