@@ -9,16 +9,8 @@ ENV UV_COMPILE_BYTECODE=1 \
 
 WORKDIR /install
 
-# 使用鏡像源加速 Apt
-RUN if [ -f /etc/apt/sources.list ]; then \
-        sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list && \
-        sed -i 's/security.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list; \
-    fi && \
-    if [ -f /etc/apt/sources.list.d/debian.sources ]; then \
-        sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources && \
-        sed -i 's/security.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources; \
-    fi && \
-    apt-get update && apt-get install -y --no-install-recommends \
+# [REMOVED] 使用官方源以避免 GPG 簽名錯誤
+RUN apt-get update && apt-get install -y --no-install-recommends \
     git build-essential \
     && rm -rf /var/lib/apt/lists/*
 
@@ -27,7 +19,6 @@ RUN if [ -f /etc/apt/sources.list ]; then \
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv pip install --system \
     torch torchvision torchaudio xformers \
-    --index-url https://mirrors.aliyun.com/pypi/simple/ \
     --extra-index-url https://download.pytorch.org/whl/cu121
 
 RUN git clone --depth 1 https://github.com/comfyanonymous/ComfyUI.git /install/ComfyUI
@@ -35,7 +26,6 @@ RUN git clone --depth 1 https://github.com/comfyanonymous/ComfyUI.git /install/C
 COPY . /install/
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv pip install --system -r /install/ComfyUI/requirements.txt \
-    --index-url https://mirrors.aliyun.com/pypi/simple/ \
     && uv pip install --system .
 
 # --- Stage 2: Final Runtime ---
@@ -50,15 +40,8 @@ ENV PYTHONUNBUFFERED=1 \
 
 WORKDIR /workspace
 
-RUN if [ -f /etc/apt/sources.list ]; then \
-        sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list && \
-        sed -i 's/security.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list; \
-    fi && \
-    if [ -f /etc/apt/sources.list.d/debian.sources ]; then \
-        sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources && \
-        sed -i 's/security.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources; \
-    fi && \
-    apt-get update && apt-get install -y --no-install-recommends \
+# [REMOVED] 使用官方源以避免 GPG 簽名錯誤
+RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     curl \
     wget \

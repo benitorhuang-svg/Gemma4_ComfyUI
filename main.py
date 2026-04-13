@@ -52,6 +52,7 @@ def generate_dashboard():
     table.add_row("🧠 Ollama (Gemma 4)", "[green]Online[/]", "Port 11434")
     table.add_row("🎨 ComfyUI", "[green]Online[/]", "Port 8188")
     table.add_row("🌐 Open WebUI", "[green]Online[/]", "Port 8080")
+    table.add_row("🔗 n8n Workflow", "[green]Online[/]", "Port 5678")
     table.add_row("📟 GPU (RTX 2060)", "[cyan]Active[/]", get_gpu_status())
 
     layout = Layout()

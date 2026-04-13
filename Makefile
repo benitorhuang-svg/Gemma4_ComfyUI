@@ -14,6 +14,7 @@ doctor:
 	@test -f .env || echo "⚠️ .env 缺失，建議從 .env.example 複製"
 	@echo "🌐 檢查服務連通性..."
 	@curl -s http://localhost:11434 > /dev/null && echo "✅ Ollama 端口連通" || echo "⚠️ Ollama 尚未啟動或端口未開放"
+	@curl -s http://localhost:5678 > /dev/null && echo "✅ n8n 端口連通" || echo "⚠️ n8n 尚未啟動"
 	@df -h . | awk 'NR==2 {if ($$4 < 10) print "⚠️ 磁碟剩餘空間不足 10GB (" $$4 " 剩餘)"}'
 	@echo "✅ 診斷完成。如有問題，請嘗試執行 'make prune'。"
 
