@@ -2,11 +2,11 @@
 set -euo pipefail
 
 # Define model paths
-MODELS_DIR="/workspace/models/checkpoints"
-VAE_DIR="/workspace/models/vae"
-LORA_DIR="/workspace/models/loras"
-UPSCALER_DIR="/workspace/models/upscale_models"
-CONTROLNET_DIR="/workspace/models/controlnet"
+MODELS_DIR="/workspace/ComfyUI/models/checkpoints"
+VAE_DIR="/workspace/ComfyUI/models/vae"
+LORA_DIR="/workspace/ComfyUI/models/loras"
+UPSCALER_DIR="/workspace/ComfyUI/models/upscale_models"
+CONTROLNET_DIR="/workspace/ComfyUI/models/controlnet"
 
 mkdir -p "$MODELS_DIR" "$VAE_DIR" "$LORA_DIR" "$UPSCALER_DIR" "$CONTROLNET_DIR"
 

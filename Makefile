@@ -51,7 +51,12 @@ help:
 
 start:
 	docker compose up --build -d
-	@echo "✅ 服務已啟動！請訪問 http://localhost:8080 (WebUI) 或 http://localhost:8188 (ComfyUI)"
+	@echo "✅ 服務已啟動！"
+	@echo "🔗 ComfyUI: http://localhost:8188"
+	@echo "🔗 WebUI:   http://localhost:8080"
+	@echo "\n💡 如果 http://localhost 無法開啟，請嘗試使用次要位址:"
+	@echo "   http://127.0.0.1:8188"
+	@echo "   http://$(shell ip addr show eth0 | grep 'inet ' | awk '{print $$2}' | cut -d/ -f1):8188"
 
 stop:
 	docker compose down

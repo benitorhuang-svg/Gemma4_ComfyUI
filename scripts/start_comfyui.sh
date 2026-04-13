@@ -6,7 +6,7 @@ export GIT_TERMINAL_PROMPT=0
 
 # --- 1. 確保基礎目錄結構 ---
 echo "⚙️ 正在初始化工作空間..."
-mkdir -p /workspace/models/checkpoints /workspace/models/vae /workspace/models/loras /workspace/models/upscale_models /workspace/models/controlnet
+mkdir -p /workspace/ComfyUI/models/checkpoints /workspace/ComfyUI/models/vae /workspace/ComfyUI/models/loras /workspace/ComfyUI/models/upscale_models /workspace/ComfyUI/models/controlnet
 mkdir -p /workspace/ComfyUI/custom_nodes /workspace/ComfyUI/output /workspace/ComfyUI/input /workspace/workflows
 
 # --- 2. 背景模型檢查 (Ollama) ---
@@ -57,7 +57,7 @@ fi
 if command -v nvidia-smi &> /dev/null; then
   VRAM_TOTAL=$(nvidia-smi --query-gpu=memory.total --format=csv,noheader,nounits | head -n 1)
   echo "📟 偵測到 GPU 顯存: ${VRAM_TOTAL} MiB"
-  COMFY_OPTS="--listen 0.0.0.0 --port 8188 --use-pytorch-cross-attention"
+  COMFY_OPTS="--listen 0.0.0.0 --port 8188 --use-pytorch-cross-attention --enable-cors-header '*' --preview-method auto --front-end-version Comfy-Org/ComfyUI_frontend@latest --force-fp16 --preview-method auto"
   if [ "${VRAM_TOTAL}" -lt 8000 ]; then
     COMFY_OPTS="${COMFY_OPTS} --lowvram"
   elif [ "${VRAM_TOTAL}" -lt 14000 ]; then
