@@ -59,7 +59,7 @@ def generate_dashboard():
     layout.split_column(
         Layout(
             Panel(
-                "[bold yellow]🌟 Gemma 4 + ComfyUI 極致編排系統 v2.6.0[/]",
+                "[bold yellow]🌟 Gemma 4 + ComfyUI 極致編排系統[/]",
                 box=box.DOUBLE,
             ),
             size=3,

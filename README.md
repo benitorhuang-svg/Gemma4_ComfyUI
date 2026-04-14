@@ -1,4 +1,4 @@
-# 🚀 Gemma 4 + ComfyUI + n8n：全方位 AI 自動化創作工作站 (v2.7.0)
+# 🚀 Gemma 4 + ComfyUI + n8n：全方位 AI 自動化創作工作站
 
 [![Gemma 4](https://img.shields.io/badge/Gemma_4-Uncensored_&_Thinking-red?style=for-the-badge&logo=googlecloud)](https://blog.google/)
 [![Open WebUI](https://img.shields.io/badge/Interface-Open_WebUI-blue?style=for-the-badge)](https://openwebui.com/)
@@ -17,6 +17,24 @@
 | **Open WebUI** | **介面 (The Face)** | 像 ChatGPT 一樣親切的對話前台，用於日常交流。 | `:8080` |
 | **n8n** | **脈絡 (The Logic)** | 低代碼自動化工作流，串接 API、定時任務與通知。 | `:5678` |
 | **Mobile API** | **閘道 (Gateway)** | 行動端快捷 API，支援 iOS 捷徑語音生圖。 | `:8000` |
+
+---
+
+## 📂 企業級目錄結構 (Project Structure)
+
+專案採用 src-based 佈署架構，確保開發與運作環境的極致純淨：
+
+```text
+Gemma4_ComfyUI/
+├── src/                # 核心代碼基地 (Dashboard, Logic)
+├── tests/              # 品質保證單元測試
+├── deploy/             # 部署設定檔 (.env.example)
+├── scripts/            # 自動化劇本 (Optimization, Setup)
+├── docker/             # Docker 容器環境定義
+├── data/               # 本地數據快取 (已設 Git 忽略)
+├── Makefile            # 全局系統指揮官
+└── README.md           # 專案戰術手冊
+```
 
 ---
 
@@ -60,8 +78,8 @@
 
 ### 1. 啟動環境
 ```bash
-cp .env.example .env  # 填寫 NGROK_TOKEN (或使用 Tailscale)
-make start           # 啟動全容器環境 (背景執行)
+cp deploy/.env.example .env  # 從部署資料夾複製範本
+make start                   # 啟動全容器環境 (背景執行)
 ```
 
 ### 2. 建立專家大腦
@@ -81,7 +99,7 @@ make api-server      # 啟動行動端閘道器 (Port 8000)
 
 | 指令 | 說明 |
 | :--- | :--- |
-| `python main.py` | **[NEW]** 啟動專業 TUI 儀表板，實時監看 GPU 狀態 |
+| `make dashboard` | **[NEW]** 啟動專業 TUI 儀表板，實時監看 GPU 狀態 |
 | `make flush` | **[NEW]** 一鍵洗滌顯存，強制回收 GPU 殘留資源 |
 | `make status` | 實時查看所有容器健康度與資源佔用 (CPU/MEM) |
 | `make build-brain`| 將 Gemma 4 轉化為具備無審查創意能力的「生圖大師」 |

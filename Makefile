@@ -2,7 +2,7 @@
 include .env
 export $(shell sed 's/=.*//' .env)
 
-.PHONY: start stop restart restart-comfy restart-ollama logs logs-comfy clean shell gemma4 help sync download-models update-nodes monitor share backup lint format prune status doctor check
+.PHONY: start stop restart restart-comfy restart-ollama logs logs-comfy clean shell gemma4 help sync download-models update-nodes monitor share backup lint format prune status doctor check dashboard
 
 # ... (other code) ...
 
@@ -11,7 +11,7 @@ doctor:
 	@docker --version || echo "❌ Docker 缺失"
 	@nvidia-smi --query-gpu=name,memory.total,memory.free --format=csv || echo "❌ GPU 驅動或容器調度異常"
 	@docker compose config > /dev/null || echo "❌ Docker Compose 配置錯誤"
-	@test -f .env || echo "⚠️ .env 缺失，建議從 .env.example 複製"
+	@test -f .env || echo "⚠️ .env 缺失，建議從 deploy/.env.example 複製"
 	@echo "🌐 檢查服務連通性..."
 	@curl -s http://localhost:11434 > /dev/null && echo "✅ Ollama 端口連通" || echo "⚠️ Ollama 尚未啟動或端口未開放"
 	@curl -s http://localhost:5678 > /dev/null && echo "✅ n8n 端口連通" || echo "⚠️ n8n 尚未啟動"
@@ -100,10 +100,16 @@ backup:
 	bash scripts/backup_config.sh
 
 lint:
-	uv run ruff check .
+	uv run ruff check src scripts experiments
+	@echo "✅ 代碼品質檢查完畢。"
 
 format:
-	uv run ruff format .
+	uv run ruff format src scripts experiments
+	@echo "✅ 代碼格式化完成。"
+
+dashboard:
+	@echo "📟 正在啟動運維儀表板..."
+	@uv run python src/dashboard.py
 
 sync:
 	uv sync

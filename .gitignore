@@ -46,8 +46,17 @@ data/comfyui/user/
 # Backups & Logs
 backups/*.tar.gz
 *.log
-.DS_Store
+# Linting & Formatting
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
 
-# UV
+# UV & Workspace
 .uv/
 uv.lock
+.python-version
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
