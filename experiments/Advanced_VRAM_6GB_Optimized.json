@@ -1,0 +1,93 @@
+{
+  "last_node_id": 7,
+  "last_link_id": 9,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "CheckpointLoaderSimple",
+      "pos": [50, 200],
+      "size": [315, 98],
+      "order": 0,
+      "outputs": [{"name": "MODEL", "type": "MODEL", "links": [1]}, {"name": "CLIP", "type": "CLIP", "links": [2, 3]}, {"name": "VAE", "type": "VAE", "links": [4]}],
+      "widgets_values": ["v1-5-pruned-emaonly.ckpt"]
+    },
+    {
+      "id": 2,
+      "type": "EmptyLatentImage",
+      "pos": [50, 400],
+      "size": [315, 106],
+      "order": 1,
+      "outputs": [{"name": "LATENT", "type": "LATENT", "links": [5]}],
+      "widgets_values": [1024, 1024, 1]
+    },
+    {
+      "id": 3,
+      "type": "CLIPTextEncode",
+      "pos": [400, 100],
+      "size": [400, 150],
+      "order": 2,
+      "inputs": [{"name": "clip", "type": "CLIP", "link": 2}],
+      "outputs": [{"name": "CONDITIONING", "type": "CONDITIONING", "links": [6]}],
+      "widgets_values": ["masterpiece, highly detailed, beautiful scenery, cinematic lighting"]
+    },
+    {
+      "id": 4,
+      "type": "CLIPTextEncode",
+      "pos": [400, 300],
+      "size": [400, 150],
+      "order": 3,
+      "inputs": [{"name": "clip", "type": "CLIP", "link": 3}],
+      "outputs": [{"name": "CONDITIONING", "type": "CONDITIONING", "links": [7]}],
+      "widgets_values": ["text, watermark, ugly, low resolution"]
+    },
+    {
+      "id": 5,
+      "type": "KSampler",
+      "pos": [850, 200],
+      "size": [300, 260],
+      "order": 4,
+      "inputs": [
+        {"name": "model", "type": "MODEL", "link": 1},
+        {"name": "positive", "type": "CONDITIONING", "link": 6},
+        {"name": "negative", "type": "CONDITIONING", "link": 7},
+        {"name": "latent_image", "type": "LATENT", "link": 5}
+      ],
+      "outputs": [{"name": "LATENT", "type": "LATENT", "links": [8]}],
+      "widgets_values": [8888, "randomize", 8, 2.0, "dpmpp_sde", "karras", 1]
+    },
+    {
+      "id": 6,
+      "type": "VAEDecodeTiled",
+      "pos": [1200, 200],
+      "size": [210, 46],
+      "order": 5,
+      "inputs": [
+        {"name": "samples", "type": "LATENT", "link": 8},
+        {"name": "vae", "type": "VAE", "link": 4}
+      ],
+      "outputs": [{"name": "IMAGE", "type": "IMAGE", "links": [9]}],
+      "widgets_values": [512]
+    },
+    {
+      "id": 7,
+      "type": "SaveImage",
+      "pos": [1450, 200],
+      "size": [210, 50],
+      "order": 6,
+      "inputs": [{"name": "images", "type": "IMAGE", "link": 9}],
+      "widgets_values": ["ComfyUI_Advanced"]
+    }
+  ],
+  "links": [
+    [1, 1, 0, 5, 0, "MODEL"],
+    [2, 1, 1, 3, 0, "CLIP"],
+    [3, 1, 1, 4, 0, "CLIP"],
+    [4, 1, 2, 6, 1, "VAE"],
+    [5, 2, 0, 5, 3, "LATENT"],
+    [6, 3, 0, 5, 1, "CONDITIONING"],
+    [7, 4, 0, 5, 2, "CONDITIONING"],
+    [8, 5, 0, 6, 0, "LATENT"],
+    [9, 6, 0, 7, 0, "IMAGE"]
+  ],
+  "version": 0.4
+}
