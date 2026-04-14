@@ -23,19 +23,25 @@ wheels/
 *.egg
 
 # Docker & Data (關鍵排除)
-data/models/*
-!data/models/.gitkeep
-data/ollama/*
-!data/ollama/.gitkeep
-data/comfyui/output/*
-!data/comfyui/output/.gitkeep
-data/comfyui/input/*
-!data/comfyui/input/.gitkeep
-data/comfyui/custom_nodes/*
-!data/comfyui/custom_nodes/ComfyUI-Manager/
-!data/comfyui/custom_nodes/ComfyUI-Ollama/
-data/open-webui/*
-!data/open-webui/.gitkeep
+data/
+!data/
+data/**/*
+!data/**/.gitkeep
+
+# 具體排除大型或暫存目錄
+data/models/
+data/ollama/
+data/n8n/
+data/open-webui/
+data/comfyui/output/
+data/comfyui/input/
+data/comfyui/models/
+data/comfyui/user/
+
+# SQLite 暫存檔 (解決截圖中的問題)
+*.sqlite-shm
+*.sqlite-wal
+*.sqlite-journal
 
 # Backups & Logs
 backups/*.tar.gz
